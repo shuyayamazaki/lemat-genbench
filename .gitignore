@@ -198,3 +198,6 @@ data/augmented_fingerprints/fingerprint_mapping.pkl
 data/augmented_fingerprints/structure_index.csv
 data/augmented_fingerprints/unique_fingerprints.pkl
 data/augmented_fingerprints/unique_fingerprints.txt
+
+results_new
+cif

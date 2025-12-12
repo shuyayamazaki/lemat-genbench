@@ -296,6 +296,7 @@ class UniquenessNewMetric(BaseMetric):
             )
             # Add empty fingerprints on failure
             result.fingerprints = []
+            result.unique_indices = []
             return result
 
         # Create individual values for consistency with base class
@@ -319,6 +320,9 @@ class UniquenessNewMetric(BaseMetric):
 
         # Add fingerprints as custom attribute (no base class modification needed)
         result.fingerprints = fingerprints
+        result.unique_indices = self._get_unique_indices(
+            fingerprints, failed_indices, len(structures)
+        )
         return result
 
     @staticmethod
@@ -474,6 +478,40 @@ class UniquenessNewMetric(BaseMetric):
                     fingerprint_idx += 1
 
         return individual_values
+
+    def _get_unique_indices(
+        self,
+        fingerprints: List[str],
+        failed_indices: List[int],
+        total_structures: int,
+    ) -> List[int]:
+        """Return indices of first occurrences for each unique fingerprint."""
+        if not fingerprints:
+            return []
+
+        unique_indices = []
+        seen_fingerprints = set()
+        failed_set = set(failed_indices)
+        fingerprint_idx = 0
+
+        for struct_idx in range(total_structures):
+            if struct_idx in failed_set:
+                continue
+
+            if fingerprint_idx >= len(fingerprints):
+                logger.warning(
+                    "Fingerprint count mismatch while determining unique indices"
+                )
+                break
+
+            fingerprint = fingerprints[fingerprint_idx]
+            if fingerprint not in seen_fingerprints:
+                unique_indices.append(struct_idx)
+                seen_fingerprints.add(fingerprint)
+
+            fingerprint_idx += 1
+
+        return unique_indices
 
     @staticmethod
     def compute_structure(structure: Structure, **compute_args: Any) -> float:

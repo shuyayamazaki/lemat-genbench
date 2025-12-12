@@ -121,6 +121,7 @@ class UniquenessNewBenchmark(BaseBenchmark):
             "total_structures_evaluated": 0,
             "failed_fingerprinting_count": 0,
             "uniqueness_ratio": np.nan,  # Alias for uniqueness_score for clarity
+            "unique_indices": [],
         }
 
         # Extract uniqueness results
@@ -157,5 +158,13 @@ class UniquenessNewBenchmark(BaseBenchmark):
             final_scores["failed_fingerprinting_count"] = metrics.get(
                 "failed_fingerprinting_count", 0
             )
+            if hasattr(uniqueness_metric_result, "unique_indices"):
+                final_scores["unique_indices"] = getattr(
+                    uniqueness_metric_result, "unique_indices", []
+                )
+            elif isinstance(uniqueness_metric_result, dict):
+                final_scores["unique_indices"] = uniqueness_metric_result.get(
+                    "unique_indices", []
+                )
 
         return final_scores
